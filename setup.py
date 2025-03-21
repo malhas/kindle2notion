@@ -6,12 +6,10 @@ with open("README.md", "r", encoding="utf-8") as f:
 with open("requirements.txt", "r", encoding="utf-8") as f:
     requirements = f.read()
 
-with open("requirements-dev.txt", "r", encoding="utf-8") as f:
-    requirements_dev = f.read()
 
 setup(
     name="kindle2notion",
-    version="1.0.1",
+    version="1.0.2",
     author="Jeffrey Jacob",
     author_email="jeffreysamjacob@gmail.com",
     description="Export all the clippings from your Kindle device to a database in Notion.",
@@ -25,7 +23,6 @@ setup(
     ],
     packages=find_packages(),
     install_requires=requirements,
-    extras_require={"dev": requirements_dev},
     python_requires=">=3.9",
     entry_points={
         "console_scripts": [

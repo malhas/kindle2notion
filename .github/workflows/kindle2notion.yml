@@ -1,0 +1,28 @@
+name: Sync Kindle Highlights to Notion
+
+on:
+    workflow_dispatch: # Allows manual triggering from the GitHub UI
+
+jobs:
+    sync-highlights:
+        runs-on: ubuntu-latest
+        steps:
+            - name: Checkout code
+              uses: actions/checkout@v3
+
+            - name: Set up Python
+              uses: actions/setup-python@v4
+              with:
+                  python-version: "3.12"
+
+            - name: Install dependencies
+              run: |
+                  python -m pip install --upgrade pip
+                  pip install -r requirements.txt
+
+            - name: Run Kindle to Notion sync
+              env:
+                  NOTION_API_AUTH_TOKEN: ${{ secrets.NOTION_API_AUTH_TOKEN }}
+                  NOTION_DATABASE_ID: ${{ secrets.NOTION_DATABASE_ID }}
+              run: |
+                  python -m kindle2notion.__main__ My\ Clippings.txt

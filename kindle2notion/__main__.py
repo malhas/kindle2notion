@@ -1,7 +1,9 @@
 import json
+import os
 
 import click
 import notional
+from dotenv import load_dotenv
 
 from kindle2notion.exporting import export_to_notion
 from kindle2notion.parsing import parse_raw_clippings_text
@@ -9,9 +11,7 @@ from kindle2notion.reading import read_raw_clippings
 
 
 @click.command()
-@click.argument("notion_api_auth_token")
-@click.argument("notion_database_id")
-@click.argument("clippings_file")
+@click.argument("clippings_file", default="My Clippings.txt")
 @click.option(
     "--enable_location",
     default=True,
@@ -34,14 +34,23 @@ from kindle2notion.reading import read_raw_clippings
 )
 
 def main(
-    notion_api_auth_token,
-    notion_database_id,
     clippings_file,
     enable_location,
     enable_highlight_date,
     enable_book_cover,
     separate_blocks
 ):
+    # Load environment variables from .env file
+    load_dotenv()
+
+    # Get Notion credentials from environment variables
+    notion_api_auth_token = os.environ.get("NOTION_API_AUTH_TOKEN")
+    notion_database_id = os.environ.get("NOTION_DATABASE_ID")
+
+    if not notion_api_auth_token or not notion_database_id:
+        print("Error: NOTION_API_AUTH_TOKEN and NOTION_DATABASE_ID environment variables must be set")
+        return
+
     notion = notional.connect(auth=notion_api_auth_token)
     db = notion.databases.retrieve(notion_database_id)
 
@@ -51,7 +60,7 @@ def main(
         # Open the clippings text file and load it into all_clippings
         all_clippings = read_raw_clippings(clippings_file)
 
-        # Parse all_clippings file and format the content to be sent tp the Notion DB into all_books
+        # Parse all_clippings file and format the content to be sent to the Notion DB into all_books
         all_books = parse_raw_clippings_text(all_clippings)
 
         # Export all the contents in all_books into the Notion DB.
